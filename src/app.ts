@@ -3,6 +3,7 @@ import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
 
+import dashboardRoutes from "./routes/dashboard.routes.js";
 import productRoutes from "./routes/product.routes.js";
 import authRoutes from "./routes/auth.routes.js";
 import healthRoutes from "./routes/health.routes.js";
@@ -26,6 +27,7 @@ app.get("/", (_, res) => {
 app.use("/health", healthRoutes);
 app.use("/auth", authRoutes);
 app.use("/products", productRoutes);
+app.use("/dashboard", dashboardRoutes);
 
 app.use(errorMiddleware);
 export default app;
