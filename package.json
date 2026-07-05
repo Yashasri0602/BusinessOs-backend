@@ -1,7 +1,7 @@
 {
   "name": "businessos-backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "BusinessOS Backend API built with Node.js, Express, TypeScript and MongoDB",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "tsx watch src/server.ts",
@@ -9,8 +9,8 @@
     "start": "node dist/server.js"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Yashasri",
+  "license": "MIT",
   "type": "module",
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",

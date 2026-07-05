@@ -3,7 +3,10 @@ import mongoose, { Schema, Document } from "mongoose";
 export interface IOrder extends Document {
   businessId: mongoose.Types.ObjectId;
   customerId: mongoose.Types.ObjectId;
-  products: mongoose.Types.ObjectId[];
+  products: {
+        product: mongoose.Types.ObjectId;
+        quantity: number;
+  }[];
   totalAmount: number;
   paymentMethod: string;
   status: string;
@@ -26,8 +29,16 @@ const orderSchema = new Schema<IOrder>(
 
     products: [
       {
-        type: Schema.Types.ObjectId,
-        ref: "Product",
+        product: {
+          type: Schema.Types.ObjectId,
+          ref: "Product",
+          required: true,
+        },
+        quantity: {
+          type: Number,
+          required: true,
+          min: 1,
+        },
       },
     ],
 
