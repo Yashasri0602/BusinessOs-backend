@@ -3,16 +3,19 @@ import ApiError from "../utils/ApiError.js";
 
 interface ProductData {
   businessId: string;
+
   name: string;
   category: string;
   description: string;
+
   price: number;
   costPrice: number;
   stock: number;
-  lowStockAlert: number;
-  barcode: string;
-  supplier: string;
-  image: string;
+
+  lowStockAlert?: number;
+  barcode?: string;
+  supplier?: string;
+  image?: string;
 }
 
 export const createProduct = async (

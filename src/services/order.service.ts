@@ -104,7 +104,7 @@ export const deleteOrder = async (
   businessId: string,
   orderId: string
 ) => {
-  const order = await Order.findOneAndDelete({
+  const order = await Order.findOne({
     _id: orderId,
     businessId,
   });
@@ -112,6 +112,19 @@ export const deleteOrder = async (
   if (!order) {
     throw new ApiError(404, "Order not found");
   }
+
+  // Restore product stock
+  for (const item of order.products) {
+    const product = await Product.findById(item.product);
+
+    if (product) {
+      product.stock += item.quantity;
+      await product.save();
+    }
+  }
+
+  // Delete the order
+  await order.deleteOne();
 
   return order;
 };

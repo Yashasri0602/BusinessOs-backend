@@ -15,6 +15,7 @@ interface RegisterBusinessData {
 export const registerBusiness = async (
   data: RegisterBusinessData
 ) => {
+
   const existingBusiness = await Business.findOne({
     email: data.email,
   });
@@ -25,29 +26,12 @@ export const registerBusiness = async (
 
   const business = await Business.create(data);
 
+  const token = generateToken(
+    business._id.toString()
+  );
 
-  return business
-};
-
-export const loginBusiness = async (
-  email: string,
-  password: string
-) => {
-  const business = await Business.findOne({ email }).select("+password");
-
-  if (!business) {
-    throw new ApiError(401, "Invalid email or password");
-  }
-
-  const isPasswordValid = await business.comparePassword(password);
-
-  if (!isPasswordValid) {
-    throw new ApiError(401, "Invalid email or password");
-  }
-  const { password: _password, ...businessResponse } = business.toObject();
-
-
-  const token = generateToken(business._id.toString());
+  const { password, ...businessResponse } =
+    business.toObject();
 
   return {
     business: businessResponse,
@@ -55,11 +39,58 @@ export const loginBusiness = async (
   };
 };
 
-export const getBusinessProfile = async (businessId: string) => {
-  const business = await Business.findById(businessId);
+export const loginBusiness = async (
+  email: string,
+  password: string
+) => {
+
+  const business = await Business.findOne({
+    email,
+  }).select("+password");
 
   if (!business) {
-    throw new ApiError(404, "Business not found");
+    throw new ApiError(
+      401,
+      "Invalid email or password"
+    );
+  }
+
+  const isPasswordValid =
+    await business.comparePassword(password);
+
+  if (!isPasswordValid) {
+    throw new ApiError(
+      401,
+      "Invalid email or password"
+    );
+  }
+
+  const { password: _password, ...businessResponse } =
+    business.toObject();
+
+  const token = generateToken(
+    business._id.toString()
+  );
+
+  return {
+    business: businessResponse,
+    token,
+  };
+};
+
+export const getBusinessProfile = async (
+  businessId: string
+) => {
+
+  const business = await Business.findById(
+    businessId
+  );
+
+  if (!business) {
+    throw new ApiError(
+      404,
+      "Business not found"
+    );
   }
 
   return business;

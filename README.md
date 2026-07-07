@@ -51,6 +51,11 @@ BusinessOS helps businesses manage products, customers, employees, expenses, and
 - Update Expense
 - Delete Expense
 
+### 🧠 Business Insights (via `@businessos/core`)
+- Sales, Inventory, Expense, Employee & Customer Reports
+- Revenue / Profit / Growth Analytics
+- Plain-language Business & Inventory Summaries
+
 ### 🛒 Order Management
 - Create Orders
 - Verify Product Availability
@@ -99,6 +104,9 @@ src/
 │
 ├── controllers/
 │
+├── integrations/
+│   └── core.adapter.ts   ← translates Mongo docs <-> @businessos/core shapes
+│
 ├── middlewares/
 │
 ├── models/
@@ -143,7 +151,7 @@ Create a `.env` file
 ```env
 PORT=5000
 
-MONGODB_URI=YOUR_MONGODB_CONNECTION_STRING
+MONGO_URI=YOUR_MONGODB_CONNECTION_STRING
 
 JWT_SECRET=YOUR_SECRET_KEY
 ```
@@ -236,6 +244,15 @@ npm run dev
 
 ---
 
+## Insights (powered by `@businessos/core`)
+
+| Method | Endpoint | Description |
+|---------|----------|-------------|
+| GET | /insights/reports | Sales, inventory, expense, employee, customer and finance reports |
+| GET | /insights/summary | Plain-language business + inventory summaries |
+
+---
+
 # 🔒 Security Features
 
 - JWT Authentication
@@ -259,17 +276,65 @@ npm run dev
 
 ---
 
+# 🧠 Integration with `@businessos/core`
+
+This backend depends on [`@businessos/core`](../business-core), a framework-agnostic
+business-logic package ("the brain") that has no knowledge of Express or MongoDB.
+
+```
+Mongoose documents (MongoDB)
+        │
+        ▼
+src/integrations/core.adapter.ts   ← translates Mongo docs to plain objects
+        │
+        ▼
+@businessos/core (analytics / reports / ai)
+        │
+        ▼
+src/services/insights.service.ts   ← calls core functions, returns JSON
+        │
+        ▼
+/insights/reports and /insights/summary
+```
+
+- `core.adapter.ts` is the **only** file that knows about both shapes. It
+  converts `IProduct`, `ICustomer`, `IEmployee`, `IExpense` and `IOrder`
+  Mongoose documents into the plain `Product`, `Customer`, `Employee`,
+  `Expense` and `Order` objects `@businessos/core` expects.
+- `insights.service.ts` fetches this business's data from MongoDB, runs it
+  through the adapter, then calls `@businessos/core`'s `reports` and `ai`
+  modules directly — no logic is duplicated between the two projects.
+- See the comment block at the top of `core.adapter.ts` for the known,
+  intentional shape gaps between the two projects (free-text vs.
+  enum fields, per-order vs. per-line pricing, and attendance history).
+- `verify-integration.mjs` at the project root exercises the full
+  adapter → `@businessos/core` pipeline with fixture data, with no
+  database required — run it any time with `node verify-integration.mjs`
+  after `npm run build` to sanity-check the wiring.
+
+## Setup
+
+```bash
+# from the parent folder that contains both projects side by side:
+#   businessos/
+#     ├── business-core/
+#     └── businessos-backend/
+
+cd business-core && npm install && npm run build
+cd ../businessos-backend && npm install   # picks up @businessos/core via the file: dependency
+```
+
+---
+
 # 🌟 Future Enhancements
 
-- AI Business Insights
-- Sales Analytics
 - Invoice Generation
 - Email Notifications
 - Inventory Forecasting
-- Employee Attendance
 - Barcode Scanner Integration
 - File Uploads
-- Reports & Charts
+- Charts on top of the `/insights` data
+- A real LLM call layered on top of `@businessos/core`'s `ai` module
 
 ---
 

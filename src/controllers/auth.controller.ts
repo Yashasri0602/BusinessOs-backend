@@ -23,6 +23,9 @@ export const register = asyncHandler(
 
 export const login = asyncHandler(
   async (req: Request, res: Response) => {
+    console.log("BODY RECEIVED:");
+    console.log(req.body);
+
     const { email, password } = req.body;
 
     const result = await loginBusiness(email, password);

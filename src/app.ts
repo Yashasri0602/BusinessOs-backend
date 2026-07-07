@@ -11,6 +11,7 @@ import dashboardRoutes from "./routes/dashboard.routes.js";
 import productRoutes from "./routes/product.routes.js";
 import authRoutes from "./routes/auth.routes.js";
 import healthRoutes from "./routes/health.routes.js";
+import insightsRoutes from "./routes/insights.routes.js";
 import errorMiddleware from "./middlewares/error.middleware.js";
 
 const app = express();
@@ -36,6 +37,7 @@ app.use("/orders", orderRoutes);
 app.use("/customers", customerRoutes);
 app.use("/employees", employeeRoutes);
 app.use("/expenses", expenseRoutes);
+app.use("/insights", insightsRoutes);
 
 app.use(errorMiddleware);
 export default app;
